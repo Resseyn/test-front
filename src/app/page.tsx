@@ -1,28 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useNameStore } from "@/store/store";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
+import styles from "./page.module.scss";
+import { Inter } from "next/font/google";
+
+const inter600 = Inter({
+  weight: "600",
+  subsets: ["cyrillic"],
+});
+
+const inter500 = Inter({
+  weight: "500",
+  subsets: ["cyrillic"],
+});
 
 export default function Home() {
-  const [name, setName] = useState("");
+  const [inputName, setInputName] = useState("");
+  const { name, setName } = useNameStore();
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+  const router = useRouter();
+
+  const handleSaveAndRedirect = (redirectTo: string) => {
+    if (inputName.trim() === "") {
+      alert("Пожалуйста, введите имя!");
+      return;
+    }
+    setName(inputName);
+    localStorage.setItem("name", inputName);
+    router.push(redirectTo);
   };
 
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setInputName(event.target.value);
+    },
+    [setInputName],
+  );
+
   return (
-    <div className="container">
-      <div className="modal">
-        <div className="modal-header">
-          <h2>Начать</h2>
-          <button className="close-btn">×</button>
+    <div className={styles.container}>
+      <div className={styles.modal}>
+        <div className={styles.modalHeader}>
+          <h2 className={inter600.className}>Начать</h2>
+          <button className={styles.closeBtn}>×</button>
         </div>
-        <div className="modal-body">
-          <label>Напишите ваше имя</label>
-          <input type="text" placeholder="Ваше имя" value={name} onChange={handleChange} />
+        <div className={styles.modalBody}>
+          <label className={inter500.className}>Напишите ваше имя</label>
+          <input type="text" placeholder="Ваше имя" defaultValue={name} onChange={handleChange} />
         </div>
-        <div className="modal-footer">
-          <button className="calc-btn">Открыть калькулятор</button>
-          <button className="gen-btn">Открыть генератор</button>
+        <div className={`${inter500.className} ${styles.modalFooter}`}>
+          <button className={styles.calcBtn} onClick={() => handleSaveAndRedirect("/utility/calculator")}>
+            Открыть калькулятор
+          </button>
+          <button className={styles.genBtn} onClick={() => handleSaveAndRedirect("/utility/password-generator")}>
+            Открыть генератор
+          </button>
         </div>
       </div>
     </div>
