@@ -2,7 +2,5 @@
 import PasswordGenerator from "@/components/passwordGenerator/passwordGenerator";
 
 export default function Home() {
-  return (
-    <PasswordGenerator></PasswordGenerator>
-  );
+  return <PasswordGenerator></PasswordGenerator>;
 }

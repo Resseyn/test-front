@@ -6,7 +6,7 @@ const work_Sans = Work_Sans({ subsets: ["latin"] });
 
 const toLocaleString = (num: string) => String(num).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, "$1 ");
 
-const Calculator = () => {
+export default function Calculator() {
   const [input, setInput] = useState<string>("0");
   const [previousInput, setPreviousInput] = useState<string | null>(null);
   const [operator, setOperator] = useState<string | null>(null);
@@ -48,7 +48,6 @@ const Calculator = () => {
   }, [input]);
 
   useEffect(() => {
-    // after using any operator, but after calculation caltulate the font size
     if (operator !== null) {
       setFontSize(96);
     } else {
@@ -151,6 +150,33 @@ const Calculator = () => {
       setInput(toLocaleString(String(currentNumber / 100)));
     }
   };
+
+  const handleKeyPress = (event: KeyboardEvent) => {
+    const key = event.key;
+
+    if (!isNaN(Number(key))) {
+      handleNumberClick(key);
+    } else if (key === ".") {
+      handleNumberClick(".");
+    } else if (key === "+" || key === "-" || key === "*" || key === "/") {
+      handleOperatorClick(key === "*" ? "×" : key === "/" ? "÷" : key);
+    } else if (key === "Enter" || key === "=") {
+      calculateResult();
+    } else if (key === "Backspace") {
+      handleDelete();
+    } else if (key === "Escape") {
+      handleClear();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [input, previousInput, operator]);
+
   return (
     <div className="page">
       <div className={styles.calculator}>
@@ -239,6 +265,4 @@ const Calculator = () => {
       </div>
     </div>
   );
-};
-
-export default Calculator;
+}
